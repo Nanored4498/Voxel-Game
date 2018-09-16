@@ -8,7 +8,7 @@ public class Test {
 	int vbo;
 
 	public static void main(String[] args) {
-		System.out.println("Saisissez un mois de l'année (1 - 12) :");
+		System.out.println("Saisissez un mois de l'annï¿½e (1 - 12) :");
 		Scanner in = new Scanner(System.in);
 		int m = in.nextInt();
 		long j = (new Date().getTime()) / 1000 / 86400;
@@ -21,7 +21,7 @@ public class Test {
 				System.out.println((i+1==m) ? "nous nous trouvons dans ce mois" : "nous ne sommes pas dans ce mois");
 				break;
 			}
-				
+		in.close();	
 	}
 
 	public Test() {
@@ -73,7 +73,7 @@ public class Test {
 				StringTokenizer tokenizer = new StringTokenizer(fl);
 				tokenizer.nextToken();
 				String request = tokenizer.nextToken();
-				request = URLDecoder.decode(request);
+				request = URLDecoder.decode(request, "UTF-8");
 				while(in.ready()) {
 //					in.readLine();
 					System.out.println(in.readLine());

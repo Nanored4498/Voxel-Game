@@ -49,12 +49,12 @@ public class GameMenu extends Scene {
 				.anchor(GuiComponent.C);
 		renderDistS = (GuiSlider) new GuiSlider(165, 0, 200, 50) {
 			protected void onMove() {
-				Camera.far = value*250f+150f;
+				Camera.far = value*600f+150f;
 				SkyBox.updateVBO();
 				renderDistT.setText("Distance de rendu: "+((int)(Camera.far)));
 			}
 		}.anchor(GuiComponent.C);
-		renderDistS.setValue((Camera.far - 150f) / 250f);
+		renderDistS.setValue((Camera.far - 150f) / 600f);
 		renderDistT = (GuiText)
 				new GuiText(new TrueTypeFont(new Font("Arial", Font.PLAIN, 30), false), "Distance de rendu: "+((int)(Camera.baseSensitivity*250f+150f)), -110, 0)
 				.anchor(GuiComponent.C);
