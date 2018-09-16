@@ -1,5 +1,6 @@
 package fr.coudert.network.packets;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,8 +26,9 @@ private static Map<Byte, Class<? extends Packet>> packets;
 	
 	public static Packet getPacket(byte packet) {
 		try {
-			return (Packet) packets.get(packet).newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+			return packets.get(packet).getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
 			e.printStackTrace();
 			return null;
 		}

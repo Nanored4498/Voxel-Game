@@ -1,19 +1,33 @@
 package fr.coudert.game;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_GREATER;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glAlphaFunc;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glViewport;
 
 import java.awt.Font;
 import java.net.InetAddress;
-import java.util.*;
-
-import javax.swing.text.DefaultEditorKit.PasteAction;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
 
-import fr.coudert.game.scenes.Game;
 import fr.coudert.maths.Vec3;
 import fr.coudert.network.ClientData;
 import fr.coudert.network.Server;
@@ -21,7 +35,10 @@ import fr.coudert.network.commands.Command;
 import fr.coudert.network.packets.MessagePack;
 import fr.coudert.rendering.Camera;
 import fr.coudert.rendering.Color;
-import fr.coudert.rendering.guis.*;
+import fr.coudert.rendering.guis.Gui;
+import fr.coudert.rendering.guis.GuiArea;
+import fr.coudert.rendering.guis.GuiInputField;
+import fr.coudert.rendering.guis.TrueTypeFont;
 import fr.coudert.utils.Input;
 
 public class ServerMain {

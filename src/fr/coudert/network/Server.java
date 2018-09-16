@@ -1,24 +1,24 @@
 package fr.coudert.network;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ConcurrentModificationException;
-import java.util.Scanner;
 
 import fr.coudert.game.ServerMain;
-import fr.coudert.network.commands.Command;
-import fr.coudert.network.packets.*;
+import fr.coudert.network.packets.DisconnectPack;
+import fr.coudert.network.packets.Packet;
+import fr.coudert.network.packets.PacketManager;
+import fr.coudert.network.packets.PingPack;
 import fr.coudert.utils.DataBuffer;
 
 public class Server {
 
-	private static int port;
 	private static DatagramSocket socket;
-	private static Scanner scanner;
 
 	public static void launch(int port) {
-		Server.port = port;
-		Server.scanner = new Scanner(System.in);
 		ServerMain.print("Requesting connection on port " + port + "...");
 		try {
 			Server.socket = new DatagramSocket(port);
