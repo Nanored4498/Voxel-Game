@@ -1,28 +1,40 @@
 package fr.coudert.game.entities.player;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor4f;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glTexCoord2f;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 
 import java.awt.Font;
 import java.util.ArrayList;
-
-import javax.lang.model.element.NestingKind;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import fr.coudert.game.GameMain;
-import fr.coudert.game.ServerMain;
 import fr.coudert.game.entities.Entity;
-import fr.coudert.game.objects.*;
+import fr.coudert.game.objects.Ak47;
+import fr.coudert.game.objects.Gun;
+import fr.coudert.game.objects.Sniper;
+import fr.coudert.game.objects.Weapon;
 import fr.coudert.game.scenes.Game;
 import fr.coudert.maths.Vec2;
 import fr.coudert.maths.Vec3;
 import fr.coudert.network.Client;
-import fr.coudert.network.packets.*;
+import fr.coudert.network.packets.MessagePack;
+import fr.coudert.network.packets.UpdatePosPack;
+import fr.coudert.network.packets.WeaponChangePack;
 import fr.coudert.rendering.Camera;
 import fr.coudert.rendering.Texture;
-import fr.coudert.rendering.guis.*;
+import fr.coudert.rendering.guis.GuiArea;
+import fr.coudert.rendering.guis.GuiComponent;
+import fr.coudert.rendering.guis.GuiInputField;
+import fr.coudert.rendering.guis.GuiProgressBar;
+import fr.coudert.rendering.guis.GuiText;
+import fr.coudert.rendering.guis.TrueTypeFont;
 import fr.coudert.utils.Input;
 
 public class Player extends Entity {
