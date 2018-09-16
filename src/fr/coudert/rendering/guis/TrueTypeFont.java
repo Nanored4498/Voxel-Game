@@ -28,7 +28,7 @@ public class TrueTypeFont {
 			texWidth *= 2;
 		BufferedImage texImage = new BufferedImage(texWidth, texHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D) texImage.getGraphics();
-		g.setColor(new java.awt.Color(255, 255, 255, 0));
+		g.setColor(new Color(255, 255, 255, 0));
 		g.fillRect(0, 0, texWidth, texHeight);
 		BufferedImage fontImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D gFont = (Graphics2D) fontImage.getGraphics();
@@ -65,7 +65,7 @@ public class TrueTypeFont {
 			if(i < 256)
 				charInfos[i] = info;
 			else
-				this.customChars.put(new Character(c), info);
+				this.customChars.put(Character.valueOf((char) c), info);
 			charImage = null;
 		}
 		texture = new Texture(texImage);
@@ -83,7 +83,7 @@ public class TrueTypeFont {
 			if(c < 256)
 				result += charInfos[c].width;
 			else
-				result += customChars.get(new Character((char) c)).width;
+				result += customChars.get(Character.valueOf((char) c)).width;
 		}
 		return result;
 	}
@@ -102,7 +102,7 @@ public class TrueTypeFont {
 			if(c < 256)
 				info = charInfos[c];
 			else
-				info = customChars.get(new Character((char) c));
+				info = customChars.get(Character.valueOf((char) c));
 			float x2 = x + info.width;
 			quadData(x, y, x2, y + height, (float) info.x / texWidth, (float) info.y / texHeight, (float) (info.x + info.width) / texWidth, (float) (info.y + height) / texHeight);
 			x = x2;
