@@ -6,7 +6,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import fr.coudert.game.ServerMain;
 import fr.coudert.utils.Input;
 
 public abstract class GuiInputField extends GuiComponent {

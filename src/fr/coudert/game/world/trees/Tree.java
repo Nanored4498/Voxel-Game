@@ -1,7 +1,6 @@
 package fr.coudert.game.world.trees;
 
 import fr.coudert.game.world.Chunk;
-import fr.coudert.game.world.World;
 import fr.coudert.game.world.blocks.Block;
 import fr.coudert.game.world.blocks.WoodBlock;
 
