@@ -15,6 +15,15 @@ javac -d "bin2" -cp "src:lib/*" @sources.txt
 Pour jouer vous pouvez lancer le serveur avec : `java -cp "bin/:lib/*" fr.coudert.game.ServerMain`  
 Puis vous pouvez lancer le jeu avec : `java -cp "bin/:lib/*" fr.coudert.game.GameMain`
 
+## BUG
+Si vous n'arrivez pas à exécuter le serveur il se peut que cela vienne d'une récente mise à jour de Java. Dans ce cas, installer
+Java8 puis changer les versions de votre compilateur et de votre interpréteur comme ceci :
+```
+sudo update-alternatives --config javac
+sudo update-alternatives --config java
+```
+Vous aurez à renseigner un chiffre indiquant la version voulu pour ces deux commandes.
+
 # Editeur de Voxel
 Vous trouverez un éditeur de voxel pour créer de nouvelles armes dans le package [editor](src/fr/coudert/editor) :
 
