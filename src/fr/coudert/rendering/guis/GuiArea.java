@@ -87,7 +87,7 @@ public class GuiArea extends GuiComponent {
 		cursorX = x + w - 6;
 	}
 
-	//TODO: Corriger BUG d'espaces en début de ligne
+	//TODO: Corriger BUG d'espaces en dÃ©but de ligne
 	public void addLine(Color[] colors, String[] text) {
 		String currentLine = "";
 		int i0 = 0, i = 0;

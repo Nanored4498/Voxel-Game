@@ -34,7 +34,6 @@ public class Particle extends Entity {
 	}
 
 	//TODO: Passer le rendu en VBO
-
 	public void render() {
 		if(!isInViewFrustum)
 			return;

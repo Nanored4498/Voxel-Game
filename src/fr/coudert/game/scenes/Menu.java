@@ -25,7 +25,7 @@ public class Menu extends Scene {
 		guis.add(new GuiButton("Jouer", 0, -20, 300, 50) {
 			public void onClick() {
 				String name = JOptionPane.showInputDialog(null, "Quel est votre pseudo ?", "Pseudo", JOptionPane.QUESTION_MESSAGE);
-//				String address = JOptionPane.showInputDialog(null, "Quel est l'addresse du serveur à rejoindre ?", "Adresse", JOptionPane.QUESTION_MESSAGE);
+				// String address = JOptionPane.showInputDialog(null, "Quel est l'addresse du serveur Ã  rejoindre ?", "Adresse", JOptionPane.QUESTION_MESSAGE);
 				String address = "localhost";
 				GameMain.setPlayerName(name);
 				LoadingWorld loadingWorld = new LoadingWorld();

@@ -17,6 +17,10 @@ public class GameMenu extends Scene {
 	private GuiText sensitivityT, renderDistT;
 	private boolean option;
 
+	private static final float MUL_SENSI = 10.f;
+	private static final float MIN_RENDER_DIST = 150.f;
+	private static final float RANGE_RENDER_DIST = 600.f;
+
 	public GameMenu(Game game) {
 		option = false;
 		title = new GuiText(new TrueTypeFont(new Font("Arial", Font.PLAIN, 40), false), "Option", 0, -110).anchor(GuiComponent.C);
@@ -40,23 +44,23 @@ public class GameMenu extends Scene {
 		sensitivityS = (GuiSlider) new GuiSlider(102, -55, 200, 50) {
 			protected void onMove() {
 				Camera.baseSensitivity = Camera.sensitivity = value;
-				sensitivityT.setText("Sensibilite: "+((int)(value*10.0f)));
+				sensitivityT.setText("Sensibilite: "+((int)(value*MUL_SENSI)));
 			}
 		}.anchor(GuiComponent.C);
 		sensitivityS.setValue(Camera.baseSensitivity);
 		sensitivityT = (GuiText)
-				new GuiText(new TrueTypeFont(new Font("Arial", Font.PLAIN, 30), false), "Sensibilite: "+((int)(Camera.baseSensitivity*10.0f)), -110, -55)
+				new GuiText(new TrueTypeFont(new Font("Arial", Font.PLAIN, 30), false), "Sensibilite: "+((int)(sensitivityS.getValue()*MUL_SENSI)), -110, -55)
 				.anchor(GuiComponent.C);
 		renderDistS = (GuiSlider) new GuiSlider(165, 0, 200, 50) {
 			protected void onMove() {
-				Camera.far = value*600f+150f;
+				Camera.far = value*RANGE_RENDER_DIST+MIN_RENDER_DIST;
 				SkyBox.updateVBO();
 				renderDistT.setText("Distance de rendu: "+((int)(Camera.far)));
 			}
 		}.anchor(GuiComponent.C);
-		renderDistS.setValue((Camera.far - 150f) / 600f);
+		renderDistS.setValue((Camera.far - MIN_RENDER_DIST) / RANGE_RENDER_DIST);
 		renderDistT = (GuiText)
-				new GuiText(new TrueTypeFont(new Font("Arial", Font.PLAIN, 30), false), "Distance de rendu: "+((int)(Camera.baseSensitivity*250f+150f)), -110, 0)
+				new GuiText(new TrueTypeFont(new Font("Arial", Font.PLAIN, 30), false), "Distance de rendu: "+((int)Camera.far), -110, 0)
 				.anchor(GuiComponent.C);
 		returnB = new GuiButton("Retour", 0, 55, 300, 50) {
 			public void onClick() {

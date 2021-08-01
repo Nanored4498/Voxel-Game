@@ -48,7 +48,6 @@ public class Player extends Entity {
 	private ArrayList<Weapon> weapons;
 	private byte wIndex;
 	private boolean wUp;
-	private byte count;
 	private float health;
 	private GuiText healthText, posText;
 	private GuiProgressBar healthBar;
@@ -62,7 +61,6 @@ public class Player extends Entity {
 		super(id, pos, 10.0f, 0.3f);
 		height = 1.25f;
 		eyesHeight = height - 0.12f;
-		count = 0;
 		health = 100;
 		showDamageEffect = false;
 		alpha = 0;
@@ -126,17 +124,15 @@ public class Player extends Entity {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
 				ya -= speed;
 		} else if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && grounded)
-			ya += 0.23f;
-		xa += xDir * Math.sin(Math.toRadians(rot.y + 90)) + zDir * Math.sin(Math.toRadians(rot.y));
-		za -= zDir * Math.cos(Math.toRadians(rot.y)) + xDir * Math.cos(Math.toRadians(rot.y + 90));
+			ya += 0.16f;
+		final double rotY = Math.toRadians(rot.y);
+		final double cosRot = Math.cos(rotY), sinRot = Math.sin(rotY);
+		xa += xDir * cosRot + zDir * sinRot;
+		za += xDir * sinRot - zDir * cosRot;
 		ya = move(xa, ya, za);
-		count ++;
-		if(count == 5) {
-			count = 0;
-			Client.send(new UpdatePosPack(id, pos, rot));
-		}
+		Client.send(new UpdatePosPack(id, pos, rot));
 		xa *= 0.9f;
-		ya *= 0.96f;
+		ya *= Game.debug ? 0.9f : 0.999f;
 		za *= 0.9f;
 		int wheel = Mouse.getDWheel();
 		if(weapons.get(wIndex).getState() == Weapon.OFF && weapons.get(wIndex).getNextState() == Weapon.OFF ) {
@@ -165,8 +161,10 @@ public class Player extends Entity {
 		if(showDamageEffect) {
 			alpha += xAlpha - 0.025f;
 			xAlpha *= 0.95f;
-			if(alpha < 0)
+			if(alpha < 0f) {
 				showDamageEffect = false;
+				alpha = 0f;
+			}
 		}
 		updateChat();
 		if(Game.debug)

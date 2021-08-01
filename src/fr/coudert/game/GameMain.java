@@ -15,7 +15,7 @@ import fr.coudert.utils.Input;
 public class GameMain {
 
 	private static Scene scene;
-	private static boolean antiAlias = false;
+	private static boolean antiAlias = true;
 	private static String playerName;
 
 	public static void update() {
@@ -53,8 +53,7 @@ public class GameMain {
 
 	public static void main(String[] args) {
 		try {
-//			Display.setDisplayMode(new DisplayMode(1280, 720));
-			Display.setDisplayMode(new DisplayMode(700, 400));
+			Display.setDisplayMode(new DisplayMode(800, 450));
 			Display.setTitle("Voxel");
 			Display.setResizable(true);
 			if(antiAlias)
@@ -75,15 +74,14 @@ public class GameMain {
 		}
 		scene = new Menu();
 		SkyBox.updateVBO();
-		long before = System.nanoTime();
-		double ns = 1000000000.0 / 60.0;
-		long timer = System.currentTimeMillis();
+		final long dt = (long) 1e9 / 60;
 		int frames = 0;
+		long nextUpdate = System.nanoTime() + dt;
+		long nextPing = System.nanoTime() + (long) 1e9;
 		while(!Display.isCloseRequested()) {
-			if(System.nanoTime() - before > ns) {
+			if(System.nanoTime() >= nextUpdate) {
 				update();
-				before += ns;
-			} else {
+				nextUpdate += dt;
 				displayResized();
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				render();
@@ -91,11 +89,16 @@ public class GameMain {
 				Display.update();
 				frames ++;
 			}
-			if(System.currentTimeMillis() - timer > 1000) {
+			if(System.nanoTime() >= nextPing) {
 				if(Game.instance != null)
 					Game.instance.updatePing(frames);
 				frames = 0;
-				timer += 1000;
+				nextPing += 1e9;
+			}
+			try {
+				Thread.sleep(Math.max(1, (long) ((Math.min(nextUpdate, nextPing) - System.nanoTime()) / 1e6)));
+			} catch(InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 		Client.stop(true);

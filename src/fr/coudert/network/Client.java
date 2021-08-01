@@ -37,8 +37,8 @@ public class Client implements Runnable {
 				DatagramPacket packet = new DatagramPacket(data, data.length);
 				socket.receive(packet);
 				parsePacket(packet);
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch(IOException e) {
+				if(running) e.printStackTrace();
 			}
 		}
 	}
@@ -68,6 +68,7 @@ public class Client implements Runnable {
 	}
 	
 	public static void stop(boolean sendDisconnection) {
+		if(!running) return;
 		running = false;
 		if(sendDisconnection)
 			send(new DisconnectPack(Player.localPlayer.id));
