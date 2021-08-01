@@ -43,7 +43,7 @@ public class Shader {
 	private void addProgram(String text, int type) {
 		int shader = glCreateShader(type);
 		if(shader == GL_FALSE) {
-			System.err.println("Erreur lors de la création d'un shader (" + shader + ")");
+			System.err.println("Erreur lors de la crÃ©ation d'un shader (" + shader + ")");
 			System.exit(1);
 		}
 		glShaderSource(shader, text);

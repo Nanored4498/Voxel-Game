@@ -11,7 +11,7 @@ import fr.coudert.rendering.Camera;
 
 public abstract class Weapon {
 
-	//TODO: Petits déplacements de l'arme lorsque l'on court ou lorsqu l'on bouge la caméra
+	//TODO: Petits dÃ©placements de l'arme lorsque l'on court ou lorsqu l'on bouge la camÃ©ra
 
 	public static final byte IDLE = 0, VISE = 1, OFF = 2;
 	public static final byte GUN = 0, AK47 = 1, SNIPER = 2;
@@ -76,7 +76,7 @@ public abstract class Weapon {
 				Camera.fov = 70 - scopePrecision*(1-transValue);
 			else
 				Camera.fov = 70;
-			Camera.sensitivity = Camera.fov / 70f * Camera.baseSensitivity;
+			Camera.sensitivity = .01f * Camera.fov * Camera.baseSensitivity;
 			if(transValue >= 1) {
 				transValue = 1;
 				trans = false;

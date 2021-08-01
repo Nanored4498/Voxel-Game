@@ -14,7 +14,6 @@ public abstract class Entity {
 	public Vec2 rot;
 
 	protected boolean gravity = true, collision = true;
-	protected float gravityFactor = 0;
 	protected boolean grounded = false;
 	protected float height, mass;
 	protected float r;
@@ -34,47 +33,56 @@ public abstract class Entity {
 		destroyed = false;
 	}
 
-	//TODO: Réfléchir à une optimisation des collisions
+	//TODO: RÃ©flÃ©chir Ã  une optimisation des collisions
 	public float move(float xa, float ya, float za) {
-		float add, result = ya;
-		if(gravity) {
-			if(grounded)
-				gravityFactor = 0;
-			else {
-				gravityFactor += Game.instance.getWorld().GRAVITY * mass;
-				ya -= gravityFactor;
-			}
-		}
+		if(gravity && !grounded)
+			ya -= Game.instance.getWorld().GRAVITY * mass;
 		if(collision) {
-			int step = (int) Math.abs(xa * 50);
-			add = xa / step;
-			for(int i = 0; i < step; i++)
-				if(isColliding(add, 0, 0))
-					break;
-				else
-					pos.x += add;
-			step = (int) Math.abs(ya * 50);
-			add = ya / step;
-			for(int i = 0; i < step; i++)
-				if(isColliding(0, add, 0)) {
-					result = 0;
-					break;
-				} else
-					pos.y += add;
-			step = (int) Math.abs(za * 50);
-			add = za / step;
-			for(int i = 0; i < step; i++)
-				if(isColliding(0, 0, add))
-					break;
-				else
-					pos.z += add;
-			grounded = isColliding(0, -0.025f, 0);
+			final double len = Math.sqrt(xa*xa + ya*ya + za*za);
+			final int DIVIDE = 50;
+			int step = (int) Math.abs(len * DIVIDE);
+			final float mul = (float) (1. / step);
+			Vec3 add = new Vec3(xa*mul, ya*mul, za*mul);
+			while(--step >= 0) {
+				Vec3 newPos = pos.copy().add(add);
+				if(isColliding(newPos)) {
+					boolean stop = true;
+					newPos = pos.copy();
+					if(add.x != 0.f) {
+						newPos.x += add.x;
+						if(isColliding(newPos)) {
+							newPos.x = pos.x;
+							add.x = 0.f;
+						} else stop = false;
+					}
+					if(add.y != 0.f) {
+						newPos.y += add.y;
+						if(isColliding(newPos)) {
+							newPos.y = pos.y;
+							add.y = 0.f;
+						} else stop = false;
+					}
+					if(add.z != 0.f) {
+						newPos.z += add.z;
+						if(isColliding(newPos)) {
+							newPos.z = pos.z;
+							add.z = 0.f;
+						} else stop = false;
+					}
+					if(stop) break;
+				}
+				pos = newPos;
+			}
+			Vec3 below = pos.copy();
+			below.y -= .025f;
+			grounded = isColliding(below);
+			if(grounded) ya = 0;
 		} else {
 			pos.x += xa;
 			pos.y += ya;
 			pos.z += za;
 		}
-		return result;
+		return ya;
 	}
 
 	public Color move2(Vec3 a, boolean canHit) {
@@ -84,30 +92,27 @@ public abstract class Entity {
 		add.mul(1/((float)step));
 		for(int i = 0; i < step; i++) {
 			if(canHit) {
-				Vec3 playerPos = Player.localPlayer.pos;
-				float playerRad = Player.localPlayer.getRadius();
-				float playerHei = Player.localPlayer.getHeight();
-				if(!(pos.x-r > playerPos.x+playerRad || pos.x+r < playerPos.x-playerRad || pos.y-height > playerPos.y+playerHei ||
-						pos.y+height < playerPos.y-playerHei || pos.z-r > playerPos.z+playerRad || pos.z+r < playerPos.z-playerRad))
+				final Vec3 dpos = Player.localPlayer.pos.copy().sub(pos);
+				final float rad = r + Player.localPlayer.getRadius();
+				final float hei = height + Player.localPlayer.getHeight();
+				if(Math.abs(dpos.x) < rad && Math.abs(dpos.y) < hei && Math.abs(dpos.z) < rad)
 					return Color.BLOOD;
 			}
-			if(!isColliding(add.x, add.y, add.z))
-				pos.add(add);
-			else {
-				for(int x = floor(pos.x + add.x - r); x <= floor(pos.x + add.x + r); x++)
-					for(int y = floor(pos.y + add.y - height); y <= floor(pos.y + add.y + height); y++)
-						for(int z = floor(pos.z + add.z - r); z <= floor(pos.z + add.z + r); z++)
-							if(Game.instance.getWorld().haveHitbox(x, y, z))
-								return Game.instance.getWorld().getBlock(x, y, z).getColor();
-			}
+			final Vec3 newPos = pos.copy().add(add);
+			for(int x = floor(newPos.x - r); x <= floor(newPos.x + r); x++)
+				for(int y = floor(newPos.y - height); y <= floor(newPos.y + height); y++)
+					for(int z = floor(newPos.z - r); z <= floor(newPos.z + r); z++)
+						if(Game.instance.getWorld().haveHitbox(x, y, z))
+							return Game.instance.getWorld().getBlock(x, y, z).getColor();
+			pos = newPos;
 		}
 		return null;
 	}
 
-	private boolean isColliding(float xa, float ya, float za) {
-		for(int x = floor(pos.x + xa - r); x <= floor(pos.x + xa + r); x++)
-			for(int y = floor(pos.y + ya - height); y <= floor(pos.y + ya + height); y++)
-				for(int z = floor(pos.z + za - r); z <= floor(pos.z + za + r); z++)
+	private boolean isColliding(Vec3 p) {
+		for(int x = floor(p.x - r); x <= floor(p.x + r); x++)
+			for(int y = floor(p.y - height); y <= floor(p.y + height); y++)
+				for(int z = floor(p.z - r); z <= floor(p.z + r); z++)
 					if(Game.instance.getWorld().haveHitbox(x, y, z))
 						return true;
 		return false;

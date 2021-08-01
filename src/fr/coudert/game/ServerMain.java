@@ -51,7 +51,7 @@ public class ServerMain {
 	private static ArrayList<ClientData> newClients;
 	private static GuiArea chat;
 
-	//TODO: R�gler BUG du depth de l'affichage
+	//TODO: Régler BUG du depth de l'affichage
 	public static void main(String[] args) {
 		//Initialisation interface
 		try {

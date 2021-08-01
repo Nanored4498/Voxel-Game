@@ -98,8 +98,10 @@ public class Game extends Scene {
 		if(pause)
 			menu.renderGUI();
 		else {
-			glColor3f(0.2f, 0.2f, 0.2f);
-			glRectf(Display.getWidth() / 2 - 2, Display.getHeight() / 2 - 2, Display.getWidth() / 2 + 2, Display.getHeight() / 2 + 2);
+			float w = .5f*Display.getWidth(), h = .5f*Display.getHeight();
+			float rw = (w+.8f*h) * 3e-3f, rh = (h+.8f*w) * 3e-3f;
+			glColor4f(0.2f, 0.2f, 0.2f, 0.7f);
+			glRectf(w - rw, h - rh, w + rw, h + rh);
 		}
 		pingGui.renderGUI();
 		ipsGui.renderGUI();

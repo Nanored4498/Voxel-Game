@@ -36,9 +36,9 @@ public class Server {
 	private static void ping() {
 		new Thread("ping-thread") {
 			public void run() {
-				long before = System.currentTimeMillis();
+				long next = System.currentTimeMillis() + 1000;
 				while(true) {
-					if(System.currentTimeMillis() - before > 1000) {
+					if(System.currentTimeMillis() >= next) {
 						try {
 							for(int key : ServerMain.getKeys()) {
 								ClientData client = ServerMain.getClient(key);
@@ -52,8 +52,14 @@ public class Server {
 								send(new PingPack(client.id, client.ping), client.address, client.port);
 								client.pingTime = System.currentTimeMillis();
 							}
-							before += 1000;
+							next += 1000;
 						} catch(ConcurrentModificationException e) {}
+					} else {
+						try {
+							sleep(Math.max(1, next-System.currentTimeMillis()-1));
+						} catch(InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
