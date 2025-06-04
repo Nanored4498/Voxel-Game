@@ -87,55 +87,68 @@ public class Player extends Entity {
 		chat.setVisibility(0.2f);
 		input = (GuiInputField) new GuiInputField(8, 50, 230, 20) {
 			public void enter() {
-				Client.send(new MessagePack(GameMain.getPlayerName(), getText()));
+				if(!getText().isEmpty())
+					Client.send(new MessagePack(GameMain.getPlayerName(), getText()));
 			}
 		}.anchor(GuiComponent.BL);
 	}
 
 	public void update() {
+		updateChat();
+		if(Game.debug)
+			posText.setText(pos.x + "  " + pos.y + "  " + pos.z);
 		gravity = collision = !Game.debug;
 		xDir = 0;
 		zDir = 0;
-		int dx = Mouse.getDX(), dy = Mouse.getDY();
-		if(dx != 0 || dy != 0) {
-			rot.x -= dy * Camera.sensitivity;
+		if(Mouse.isGrabbed()) {
+			rot.x -= Mouse.getDY() * Camera.sensitivity;
 			if(rot.x > 85f)
 				rot.x = 85f;
 			else if(rot.x < -85f)
 				rot.x = -85f;
-			rot.y += dx * Camera.sensitivity;
+			rot.y += Mouse.getDX() * Camera.sensitivity;
 			calcDir();
+			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+				speed = 0.02f;
+			else
+				speed = 0.01f;
+			if(Keyboard.isKeyDown(Keyboard.KEY_Z))
+				zDir += speed;
+			if(Keyboard.isKeyDown(Keyboard.KEY_S))
+				zDir -= speed;
+			if(Keyboard.isKeyDown(Keyboard.KEY_Q))
+				xDir -= speed;
+			if(Keyboard.isKeyDown(Keyboard.KEY_D))
+				xDir += speed;
+			final double rotY = Math.toRadians(rot.y);
+			final double cosRot = Math.cos(rotY), sinRot = Math.sin(rotY);
+			xa += xDir * cosRot + zDir * sinRot;
+			za += xDir * sinRot - zDir * cosRot;
+			if(Game.debug) {
+				if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+					ya += speed;
+				if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+					ya -= speed;
+			} else if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && grounded)
+				ya += 0.16f;
+			if(Input.getMouseDown(1))
+				weapons.get(wIndex).setState(Weapon.VISE, true);
+			if(Input.getMouseUp(1))
+				weapons.get(wIndex).setState(Weapon.IDLE, true);
+			if(Mouse.isButtonDown(0))
+				weapons.get(wIndex).shoot();
+			if(Input.getKeyDown(Keyboard.KEY_RETURN)) {
+				Mouse.setGrabbed(false);
+				input.setFocus(true);
+				chat.setVisibility(1);
+			}
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			speed = 0.02f;
-		else
-			speed = 0.01f;
-		if(Keyboard.isKeyDown(Keyboard.KEY_Z))
-			zDir += speed;
-		if(Keyboard.isKeyDown(Keyboard.KEY_S))
-			zDir -= speed;
-		if(Keyboard.isKeyDown(Keyboard.KEY_Q))
-			xDir -= speed;
-		if(Keyboard.isKeyDown(Keyboard.KEY_D))
-			xDir += speed;
-		if(Game.debug) {
-			if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
-				ya += speed;
-			if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
-				ya -= speed;
-		} else if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && grounded)
-			ya += 0.16f;
-		final double rotY = Math.toRadians(rot.y);
-		final double cosRot = Math.cos(rotY), sinRot = Math.sin(rotY);
-		xa += xDir * cosRot + zDir * sinRot;
-		za += xDir * sinRot - zDir * cosRot;
 		ya = move(xa, ya, za);
 		Client.send(new UpdatePosPack(id, pos, rot));
 		xa *= 0.9f;
 		ya *= Game.debug ? 0.9f : 0.999f;
 		za *= 0.9f;
-		int wheel = Mouse.getDWheel();
-		if(weapons.get(wIndex).getState() == Weapon.OFF && weapons.get(wIndex).getNextState() == Weapon.OFF ) {
+		if(weapons.get(wIndex).getState() == Weapon.OFF && weapons.get(wIndex).getNextState() == Weapon.OFF) {
 			wIndex += wUp ? 1 : -1;
 			if(wIndex < 0)
 				wIndex = (byte) (weapons.size()-1);
@@ -143,19 +156,12 @@ public class Player extends Entity {
 				wIndex = 0;
 			Client.send(new WeaponChangePack(id, wIndex));
 			weapons.get(wIndex).setState(Weapon.IDLE, true);
-		} else if(wheel > 0) {
-			wUp = true;
-			weapons.get(wIndex).setState(Weapon.OFF, true);
-		} else if(wheel < 0) {
-			wUp = false;
-			weapons.get(wIndex).setState(Weapon.OFF, true);
-		}
-		if(Input.getMouseDown(1))
-			weapons.get(wIndex).setState(Weapon.VISE, true);
-		if(Input.getMouseUp(1))
-			weapons.get(wIndex).setState(Weapon.IDLE, true);
-		if(Mouse.isButtonDown(0)) {
-			weapons.get(wIndex).shoot();
+		} else if(Mouse.isGrabbed()) {
+			final int wheel = Mouse.getDWheel();
+			if(wheel != 0) {
+				wUp = wheel > 0;
+				weapons.get(wIndex).setState(Weapon.OFF, true);
+			}
 		}
 		weapons.get(wIndex).update(this);
 		if(showDamageEffect) {
@@ -165,14 +171,6 @@ public class Player extends Entity {
 				showDamageEffect = false;
 				alpha = 0f;
 			}
-		}
-		updateChat();
-		if(Game.debug)
-			posText.setText(pos.x + "  " + pos.y + "  " + pos.z);
-		if(Input.getKeyDown(28) && Mouse.isGrabbed()) {
-			Mouse.setGrabbed(false);
-			input.setFocus(true);
-			chat.setVisibility(1);
 		}
 	}
 
@@ -246,6 +244,8 @@ public class Player extends Entity {
 		if(health <= 0) {
 			health = 100;
 			pos = Game.instance.getSpawnPos().copy();
+			xa = ya = za = 0.f;
+			grounded = false;
 			xAlpha = alpha = 0;
 			showDamageEffect = false;
 		}

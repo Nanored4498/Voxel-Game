@@ -81,17 +81,17 @@ public class ServerMain {
 		//Initialisation serveur
 		seed = 0;
 		spawnPos = new Vec3(5, 64, 5);
-		id = -10000;
+		id = 0;
 		keys = new ArrayList<Integer>();
 		clients = new HashMap<Integer, ClientData>();
 		newClients = new ArrayList<ClientData>();
 		Server.launch(4498);
 		//boucle main
 		long before = System.nanoTime();
-		double ns = 1000000000.0 / 25.0;
+		final double ns = 1e9 / 25.0;
 		while(!Display.isCloseRequested()) {
 			if(System.nanoTime() - before > ns) {
-				float w = Display.getWidth(), h = Display.getHeight();
+				final float w = Display.getWidth(), h = Display.getHeight();
 				chat.update();
 				input.update();
 				Input.update();
@@ -132,9 +132,8 @@ public class ServerMain {
 	}
 
 	public static int addClient(String name, InetAddress address, int port) {
-		id++;
 		newClients.add(new ClientData(id, name, address, port));
-		return id;
+		return id++;
 	}
 
 	public static void setInGame(ClientData clientData) {
@@ -167,6 +166,6 @@ public class ServerMain {
 	public static Vec3 getSpawnPos() { return spawnPos; }
 	public static ArrayList<Integer> getKeys() { return keys; }
 	public static ClientData getClient(int i) { return clients.get(i); }
-	public static int getNewID() { id++; return id; }
+	public static int getNewID() { return id++; }
 
 }

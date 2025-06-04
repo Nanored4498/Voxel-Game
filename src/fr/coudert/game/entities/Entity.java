@@ -35,48 +35,54 @@ public abstract class Entity {
 
 	//TODO: Réfléchir à une optimisation des collisions
 	public float move(float xa, float ya, float za) {
-		if(gravity && !grounded)
+		if(gravity && !grounded) {
+			final float SPEED_LIM = 0.8f;
 			ya -= Game.instance.getWorld().GRAVITY * mass;
+			if(ya < -SPEED_LIM) ya = -SPEED_LIM;
+		}
 		if(collision) {
 			final double len = Math.sqrt(xa*xa + ya*ya + za*za);
-			final int DIVIDE = 50;
-			int step = (int) Math.abs(len * DIVIDE);
-			final float mul = (float) (1. / step);
-			Vec3 add = new Vec3(xa*mul, ya*mul, za*mul);
-			while(--step >= 0) {
-				Vec3 newPos = pos.copy().add(add);
-				if(isColliding(newPos)) {
-					boolean stop = true;
-					newPos = pos.copy();
-					if(add.x != 0.f) {
-						newPos.x += add.x;
-						if(isColliding(newPos)) {
-							newPos.x = pos.x;
-							add.x = 0.f;
-						} else stop = false;
+			if(len > 0.) {
+				final int DIVIDE = 50;
+				int step = Math.max(1, (int) Math.abs(len * DIVIDE));
+				final float mul = (float) (1. / step);
+				Vec3 add = new Vec3(xa*mul, ya*mul, za*mul);
+				while(--step >= 0) {
+					Vec3 newPos = pos.copy().add(add);
+					if(isColliding(newPos)) {
+						boolean stop = true;
+						newPos = pos.copy();
+						if(add.x != 0.f) {
+							newPos.x += add.x;
+							if(isColliding(newPos)) {
+								newPos.x = pos.x;
+								add.x = 0.f;
+							} else stop = false;
+						}
+						if(add.y != 0.f) {
+							newPos.y += add.y;
+							if(isColliding(newPos)) {
+								newPos.y = pos.y;
+								add.y = 0.f;
+								ya = 0;
+							} else stop = false;
+						}
+						if(add.z != 0.f) {
+							newPos.z += add.z;
+							if(isColliding(newPos)) {
+								newPos.z = pos.z;
+								add.z = 0.f;
+							} else stop = false;
+						}
+						if(stop) break;
 					}
-					if(add.y != 0.f) {
-						newPos.y += add.y;
-						if(isColliding(newPos)) {
-							newPos.y = pos.y;
-							add.y = 0.f;
-						} else stop = false;
-					}
-					if(add.z != 0.f) {
-						newPos.z += add.z;
-						if(isColliding(newPos)) {
-							newPos.z = pos.z;
-							add.z = 0.f;
-						} else stop = false;
-					}
-					if(stop) break;
+					pos = newPos;
 				}
-				pos = newPos;
+				Vec3 below = pos.copy();
+				below.y -= .025f;
+				grounded = isColliding(below);
+				if(grounded) ya = 0;
 			}
-			Vec3 below = pos.copy();
-			below.y -= .025f;
-			grounded = isColliding(below);
-			if(grounded) ya = 0;
 		} else {
 			pos.x += xa;
 			pos.y += ya;
@@ -123,8 +129,10 @@ public abstract class Entity {
 	}
 
 	protected void calcDir() {
-		float cosP = (float) Math.cos(Math.toRadians(rot.x));
-		dir = new Vec3((float) Math.cos(Math.toRadians(rot.y - 90)) * cosP, (float) Math.sin(Math.toRadians(-rot.x)), (float) Math.sin(Math.toRadians(rot.y - 90)) * cosP).normalized();
+		final double rx = Math.toRadians(rot.x);
+		final double ry = Math.toRadians(rot.y);
+		final float cosP = (float) Math.cos(rx);
+		dir = new Vec3((float) Math.sin(ry) * cosP, (float) - Math.sin(rx), (float) - Math.cos(ry) * cosP);
 	}
 
 	public Vec3 getLeft() {

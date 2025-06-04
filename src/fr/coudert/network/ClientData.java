@@ -13,7 +13,7 @@ public class ClientData {
 	public String name;
 	public InetAddress address;
 	public int port;
-	public int ping, timeOuts;
+	public int ping, pingSent;
 	public long pingTime;
 	public Vec3 pos;
 	public Vec2 rot;
@@ -24,7 +24,7 @@ public class ClientData {
 		this.name = name;
 		this.address = address;
 		this.port = port;
-		ping = timeOuts = 0;
+		ping = pingSent = 0;
 		pingTime = 0;
 		rot = new Vec2();
 		pos = ServerMain.getSpawnPos();

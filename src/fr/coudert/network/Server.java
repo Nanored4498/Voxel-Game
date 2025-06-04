@@ -42,15 +42,15 @@ public class Server {
 						try {
 							for(int key : ServerMain.getKeys()) {
 								ClientData client = ServerMain.getClient(key);
-								client.timeOuts ++;
-								if(client.timeOuts > 5) {
-									ServerMain.removeClient(client.id);
+								if(client.pingSent > 5) {
 									sendToAll(new DisconnectPack(client.id));
+									ServerMain.removeClient(client.id);
 									ServerMain.print(client.name + " was not answering, he has been disconnected");
 									continue;
 								}
 								send(new PingPack(client.id, client.ping), client.address, client.port);
 								client.pingTime = System.currentTimeMillis();
+								++ client.pingSent;
 							}
 							next += 1000;
 						} catch(ConcurrentModificationException e) {}
@@ -94,16 +94,12 @@ public class Server {
 	}
 
 	public static void send(DataBuffer data, InetAddress address, int port) {
-		new Thread("send-thread") {
-			public void run() {
-				try {
-					DatagramPacket packet = new DatagramPacket(data.getData(), data.getLength(), address, port);
-					socket.send(packet);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
+		try {
+			DatagramPacket packet = new DatagramPacket(data.getData(), data.getLength(), address, port);
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void send(Packet packet, InetAddress address, int port) {

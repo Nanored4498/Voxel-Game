@@ -40,7 +40,9 @@ public abstract class GuiInputField extends GuiComponent {
 			}
 			for(int i = 14; i <= 82; i++)
 				if(Input.getKeyDown(i)) {
-					String newT = text.getText() + Input.getKeyString(i, Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54));
+					final char c = Input.getKeyChar(i, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
+					if(c == 0) continue;
+					String newT = text.getText() + c;
 					while(text.getFont().getWidth(newT) > w - 8) {
 						past += newT.charAt(0);
 						newT = newT.substring(1);

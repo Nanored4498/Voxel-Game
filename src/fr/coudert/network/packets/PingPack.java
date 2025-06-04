@@ -32,7 +32,7 @@ public class PingPack extends Packet {
 		ClientData clientData = ServerMain.getClient(id);
 		if(clientData == null)
 			return;
-		clientData.timeOuts = 0;
+		clientData.pingSent = 0;
 		clientData.ping = (int) (time - clientData.pingTime);
 	}
 

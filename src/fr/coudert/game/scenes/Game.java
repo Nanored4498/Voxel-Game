@@ -60,25 +60,28 @@ public class Game extends Scene {
 	}
 
 	public void update() {
-		if(Input.getKeyDown(Keyboard.KEY_ESCAPE) && Mouse.isGrabbed()) {
-			pause = true;
-			Mouse.setGrabbed(false);
-		}
 		if(Mouse.isGrabbed()) {
-			if(Input.getKeyDown(Keyboard.KEY_F3))
-				debug = ! debug;
-			entitiesManager.update();
-			world.update();
-			FrustumCulling.update(this);
-		} else {
-			if(pause)
-				menu.update();
-			else if((Input.getMouseDown(0) && !Player.localPlayer.isMouseInChat()) || Input.getKeyDown(Keyboard.KEY_ESCAPE)) {
-					Mouse.setGrabbed(true);
-					Player.localPlayer.stopFocus();
+			if(Input.getKeyDown(Keyboard.KEY_ESCAPE)) {
+				pause = true;
+				Mouse.setGrabbed(false);
+			} else if(Input.getKeyDown(Keyboard.KEY_F3)) {
+				debug = !debug;
 			}
-			Player.localPlayer.updateChat();
+		} else {
+			if(Input.getKeyDown(Keyboard.KEY_ESCAPE)) {
+				pause = false;
+				Player.localPlayer.stopFocus();
+				Mouse.setGrabbed(true);
+			}
+			if(Input.getMouseDown(0) && !Player.localPlayer.isMouseInChat()) {
+				Player.localPlayer.stopFocus();
+				if(!pause) Mouse.setGrabbed(true);
+			}
 		}
+		entitiesManager.update();
+		world.update();
+		FrustumCulling.update(this);
+		if(pause) menu.update();
 	}
 
 	public void render() {

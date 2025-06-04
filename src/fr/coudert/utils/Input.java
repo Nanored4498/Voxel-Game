@@ -35,15 +35,19 @@ public class Input {
 
 	public static int getDWheel() { return wheel; }
 
-	public static String getKeyString(int keyCode, boolean maj) {
+	public static char getKeyChar(int keyCode, boolean maj) {
 		String name = Keyboard.getKeyName(keyCode);
-		if(name.length() == 1)
-			return maj ? name : name.toLowerCase();
+		if(name.length() == 1) {
+			char c = name.charAt(0);
+			if(!maj && 'A' <= c && c <= 'Z')
+				c += 'a' - 'A';
+			return c;
+		}
 		else if(keyCode == 57)
-			return " ";
+			return ' ';
 		else if(name.startsWith("NUMPAD"))
-			return name.substring(name.length()-1);
-		else return "";
+			return name.charAt(6);
+		return 0;
 	}
 
 }
